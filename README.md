@@ -33,3 +33,4 @@ Run the following command:
 ```
 $ mkfont ui
 ```
+![Example](https://github.com/apparata/mkfont/assets/384210/62851446-9747-4656-842a-b1d7c67fb7e3)
