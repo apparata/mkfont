@@ -11,9 +11,7 @@ struct MakeFontApp: App {
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
             NSApp.windows.first?.makeKeyAndOrderFront(nil)
-            if let appIcon = Bundle.module.url(forResource: "MKFontResources/appicon", withExtension: "png") {
-                NSApp.applicationIconImage = NSImage(byReferencing: appIcon)
-            }
+            NSApp.applicationIconImage = appIcon
         }
     }
 

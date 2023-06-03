@@ -21,8 +21,7 @@ let package = Package(
             dependencies: [
                 "MakeFontKit",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ],
-            resources: [.copy("MKFontResources")]),
+            ]),
         .target(
             name: "MakeFontKit",
             dependencies: [
