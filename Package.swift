@@ -12,8 +12,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.2.2"),
-        .package(url: "https://github.com/apparata/SystemKit", exact: "1.5.0"),
-        .package(url: "https://github.com/apparata/AssetCatalogKit", exact: "1.3.0"),
+        .package(url: "https://github.com/apparata/SystemKit", exact: "1.7.0"),
+        .package(url: "https://github.com/apparata/AssetCatalogKit", exact: "1.4.0"),
     ],
     targets: [
         .executableTarget(
