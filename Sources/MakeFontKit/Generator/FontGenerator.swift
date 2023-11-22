@@ -131,7 +131,7 @@ public class FontGenerator {
             
             let package = Package(
                name: "\(packageName)",
-               platforms: [.iOS(\(iOSVersion)), .macOS(\(macOSVersion)],
+               platforms: [.iOS(\(iOSVersion)), .macOS(\(macOSVersion))],
                products: [
                   .library(name: "\(libraryName)", targets: ["\(targetName)"])
                ],
