@@ -130,14 +130,14 @@ public class FontGenerator {
             import PackageDescription
             
             let package = Package(
-               name: "\(packageName)",
-               platforms: [.iOS(\(iOSVersion)), .macOS(\(macOSVersion))],
-               products: [
-                  .library(name: "\(libraryName)", targets: ["\(targetName)"])
-               ],
-               targets: [
-                  .target(name: "\(targetName)")
-               ]
+                name: "\(packageName)",
+                platforms: [.iOS(\(iOSVersion)), .macOS(\(macOSVersion))],
+                products: [
+                    .library(name: "\(libraryName)", targets: ["\(targetName)"])
+                ],
+                targets: [
+                    .target(name: "\(targetName)")
+                ]
             )
             """
     }
@@ -173,16 +173,30 @@ public class FontGenerator {
             import CoreText
             
             public enum FontError: Swift.Error {
-               case failedToRegisterFont
+                case failedToRegisterFont
             }
-            
+
+            private var registeredFonts: Set<String> = []
+
+            func isRegisteredFont(_ name: String) -> Bool {
+                registeredFonts.contains(name)
+            }
+
             func registerFont(named name: String) throws {
-               guard let asset = NSDataAsset(name: "Fonts/\(name)", bundle: Bundle.module),
-                  let provider = CGDataProvider(data: asset.data as NSData),
-                  let font = CGFont(provider),
-                  CTFontManagerRegisterGraphicsFont(font, nil) else {
-                throw FontError.failedToRegisterFont
-               }
+                guard !isRegisteredFont(name) else {
+                    return
+                }
+                try registerFontAsset(named: name)
+                registeredFonts.insert(name)
+            }
+
+            private func registerFontAsset(named name: String) throws {
+                guard let asset = NSDataAsset(name: "Fonts/\(name)", bundle: Bundle.module),
+                    let provider = CGDataProvider(data: asset.data as NSData),
+                    let font = CGFont(provider),
+                    CTFontManagerRegisterGraphicsFont(font, nil) else {
+                    throw FontError.failedToRegisterFont
+                }
             }
             """#
         
@@ -191,10 +205,15 @@ public class FontGenerator {
     
     public func generateFontStruct(for fontFamily: FontFamily) -> String {
         
+        var registerFonts: String = ""
         var staticFonts: String = ""
         for font in fontFamily.fonts {
-            let style = font.style.lowercased()
+            var style = font.style.lowercased()
+            if style[style.startIndex].isNumber {
+                style = "_\(style)"
+            }
             let name = font.path.deletingExtension.lastComponent
+            registerFonts += "        try registerFont(named: Self.\(style).name)\n"
             staticFonts += "    public static let \(style) = \(fontFamily.name)Font(named: \"\(name)\")\n"
         }
         
@@ -209,12 +228,15 @@ public class FontGenerator {
                     do {
                         try registerFont(named: name)
                     } catch {
-                        let reason = error.localizedDescription
-                        fatalError("Failed to register font: \\(reason)")
+                        dump(error)
                     }
                 }
 
-            \(staticFonts)
+                public static func register() throws {
+            \(registerFonts.trimmingCharacters(in: .newlines))
+                }
+
+            \(staticFonts.trimmingCharacters(in: .newlines))
             }
             """
     }
